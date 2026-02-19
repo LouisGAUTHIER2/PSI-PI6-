@@ -77,11 +77,20 @@ namespace TourneeFutee
             else
             {
                 List<float> nouvelleLigne = new List<float>(NbColumns);
+
                 for (int j = 0; j < NbColumns; j++)
                 {
-                    nouvelleLigne[j] = DefaultValue;
+                    nouvelleLigne.Add(DefaultValue);
                 }
-                element.Insert(i, nouvelleLigne);
+                if (i == NbRows)
+                {
+                    element.Add(nouvelleLigne);
+                }
+                else
+                {
+                    element.Insert(i, nouvelleLigne);
+                }
+                
             }
         }
 
