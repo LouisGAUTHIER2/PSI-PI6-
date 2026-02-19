@@ -34,7 +34,7 @@
         // Lecture seule
         public float DefaultValue
         {
-            get { return defaultValue; } // TODO : implémenter
+            get { return defaultValue; }
                  // pas de set
         }
 
