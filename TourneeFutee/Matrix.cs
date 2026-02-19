@@ -92,7 +92,17 @@ namespace TourneeFutee
          */
         public void AddColumn(int j)
         {
-            // TODO : implémenter
+            if (j < 0 || j > NbColumns)
+            {
+                throw new ArgumentOutOfRangeException(nameof(j), "Indice j invalide");
+            }
+            else
+            {
+                for (int i = 0; i < NbRows; i++)
+                {
+                    element[i].Insert(j, defaultValue);
+                }
+            }
         }
 
         // Supprime la ligne à l'indice `i`. Décale les lignes suivantes vers le haut.
