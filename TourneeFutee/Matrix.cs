@@ -87,14 +87,31 @@ namespace TourneeFutee
         // Lève une ArgumentOutOfRangeException si `i` est en dehors des indices valides
         public void RemoveRow(int i)
         {
-            // TODO : implémenter
+            if (i < 0 || i >= NbRows)
+            {
+                throw new ArgumentOutOfRangeException(nameof(i), "Indice i invalide");
+            }
+            else
+            {
+                element.RemoveAt(i);
+            }
         }
 
         // Supprime la colonne à l'indice `j`. Décale les colonnes suivantes vers la gauche.
         // Lève une ArgumentOutOfRangeException si `j` est en dehors des indices valides
         public void RemoveColumn(int j)
         {
-            // TODO : implémenter
+            if (j < 0 || j >= NbColumns)
+            {
+                throw new ArgumentOutOfRangeException(nameof(j), "Indice j invalide");
+            }
+            else
+            {
+                for (int i = 0; i < NbRows; i++)
+                {
+                    element[i].RemoveAt(j);
+                }
+            }
         }
 
         // Renvoie la valeur à la ligne `i` et colonne `j`
