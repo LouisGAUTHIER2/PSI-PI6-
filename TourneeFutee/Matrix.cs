@@ -5,7 +5,8 @@ namespace TourneeFutee
     public class Matrix
     {
         // TODO : ajouter tous les attributs que vous jugerez pertinents 
-
+        private List<List<float>> element;
+        private float defaultValue;
 
         /* Crée une matrice de dimensions `nbRows` x `nbColums`.
          * Toutes les cases de cette matrice sont remplies avec `defaultValue`.
@@ -13,14 +14,29 @@ namespace TourneeFutee
          */
         public Matrix(int nbRows = 0, int nbColumns = 0, float defaultValue = 0)
         {
-            // TODO : implémenter
+            if (nbRows < 0 || nbColumns < 0)
+            {
+                throw new ArgumentOutOfRangeException("Les dimensions de la matrice doivent être positives.");
+            }
+
+            element = new List<List<float>>();
+
+            for (int c = 0; c < nbColumns; c++)
+            {
+                List<float> column = new List<float>();
+                for (int r = 0; r < nbRows; r++)
+                {
+                    column.Add(defaultValue);
+                }
+                element.Add(column);
+            }
         }
 
         // Propriété : valeur par défaut utilisée pour remplir les nouvelles cases
         // Lecture seule
         public float DefaultValue
         {
-            get; // TODO : implémenter
+            get { return defaultValue; } // TODO : implémenter
                  // pas de set
         }
 
@@ -28,7 +44,11 @@ namespace TourneeFutee
         // Lecture seule
         public int NbRows
         {
-            get; // TODO : implémenter
+            get 
+            { 
+                if (element.Count == 0) return 0;
+                else return element[0].Count;
+            }
                  // pas de set
         }
 
@@ -36,8 +56,10 @@ namespace TourneeFutee
         // Lecture seule
         public int NbColumns
         {
-            get; // TODO : implémenter
-                 // pas de set
+            get
+            {
+                return element.Count;
+            }
         }
 
         /* Insère une ligne à l'indice `i`. Décale les lignes suivantes vers le bas.
