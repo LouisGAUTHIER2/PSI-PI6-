@@ -6,7 +6,7 @@
         // TODO : ajouter tous les attributs que vous jugerez pertinents 
         private bool directed;
         private Matrix adjacencyMatrix;
-
+        private Dictionary<string, int> nomSommet;
 
         // --- Construction du graphe ---
 
@@ -15,6 +15,7 @@
         public Graph(bool directed, float noEdgeValue = 0)
         {
             this.directed = directed;
+            this.adjacencyMatrix = new Matrix(0, 0, noEdgeValue);
         }
 
 
@@ -26,7 +27,7 @@
         {
             get
             {
-                return Math.Min(adjacencyMatrix.NbRows, adjacencyMatrix.NbColumns);
+                return nomSommet.Count;
             }
                     // pas de set
         }
