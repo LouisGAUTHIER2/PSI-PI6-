@@ -12,7 +12,7 @@ namespace TourneeFutee
          * Toutes les cases de cette matrice sont remplies avec `defaultValue`.
          * Lève une ArgumentOutOfRangeException si une des dimensions est négative
          */
-        public Matrix(int nbRows = 0, int nbColumns = 0, float defaultValue = 0)
+        public Matrix(int nbRows = 0, int nbColumns = 0, float DefaultValue = 0)
         {
             if (nbRows < 0 || nbColumns < 0)
             {
@@ -20,13 +20,14 @@ namespace TourneeFutee
             }
 
             element = new List<List<float>>();
+            defaultValue = DefaultValue;
 
             for (int c = 0; c < nbColumns; c++)
             {
                 List<float> column = new List<float>();
                 for (int r = 0; r < nbRows; r++)
                 {
-                    column.Add(defaultValue);
+                    column.Add(DefaultValue);
                 }
                 element.Add(column);
             }
