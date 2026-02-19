@@ -7,6 +7,7 @@
         private bool directed;
         private Matrix adjacencyMatrix;
         private Dictionary<string, int> nomSommet;
+        private Dictionary<string, float> valeurSommet;
 
         // --- Construction du graphe ---
 
@@ -16,6 +17,8 @@
         {
             this.directed = directed;
             this.adjacencyMatrix = new Matrix(0, 0, noEdgeValue);
+            this.nomSommet = new Dictionary<string, int>();
+            this.valeurSommet = new Dictionary<string, float>();
         }
 
 
@@ -50,7 +53,13 @@
         // Lève une ArgumentException s'il existe déjà un sommet avec le même nom dans le graphe
         public void AddVertex(string name, float value = 0)
         {
-            // TODO : implémenter
+            if (nomSommet.ContainsKey(name)) throw new ArgumentException($"Le sommet de nom {name} existe déjà dans le graphe.");
+
+            nomSommet.Add(name, Order); // le nouvel indice du sommet est égal à l'ordre du graphe avant son ajout
+            valeurSommet.Add(name, value);
+
+            adjacencyMatrix.AddRow(adjacencyMatrix.NbRows);
+            adjacencyMatrix.AddColumn(adjacencyMatrix.NbColumns);
         }
 
 
@@ -58,7 +67,26 @@
         // Lève une ArgumentException si le sommet n'a pas été trouvé dans le graphe
         public void RemoveVertex(string name)
         {
-            // TODO : implémenter
+            if (!nomSommet.ContainsKey(name)) throw new ArgumentException($"Le sommet de nom {name} n'existe pas dans le graphe.");
+
+            int index = nomSommet[name];
+
+            // Supprimer le sommet de la matrice d'adjacence
+            adjacencyMatrix.RemoveRow(index);
+            adjacencyMatrix.RemoveColumn(index);
+
+            // Supprimer le sommet des dictionnaires
+            nomSommet.Remove(name);
+            valeurSommet.Remove(name);
+
+            // Mettre à jour les indices des sommets restants
+            foreach (var key in nomSommet.Keys.ToList())
+            {
+                if (nomSommet[key] > index)
+                {
+                    nomSommet[key]--;
+                }
+            }
         }
 
         // Renvoie la valeur du sommet de nom `name`
