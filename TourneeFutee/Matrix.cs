@@ -70,7 +70,19 @@ namespace TourneeFutee
          */
         public void AddRow(int i)
         {
-            // TODO : implémenter
+            if (i < 0 || i >= NbRows)
+            {
+                throw new ArgumentOutOfRangeException(nameof(i), "Indice i invalide");
+            }
+            else
+            {
+                List<float> nouvelleLigne = new List<float>(NbColumns);
+                for (int j = 0; j < NbColumns; j++)
+                {
+                    nouvelleLigne[j] = DefaultValue;
+                }
+                element.Insert(i, nouvelleLigne);
+            }
         }
 
         /* Insère une colonne à l'indice `j`. Décale les colonnes suivantes vers la droite.
