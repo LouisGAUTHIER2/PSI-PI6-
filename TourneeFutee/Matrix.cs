@@ -70,7 +70,7 @@ namespace TourneeFutee
          */
         public void AddRow(int i)
         {
-            if (i < 0 || i >= NbRows)
+            if (i < 0 || i > NbRows)
             {
                 throw new ArgumentOutOfRangeException(nameof(i), "Indice i invalide");
             }
