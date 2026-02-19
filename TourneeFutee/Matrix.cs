@@ -1,4 +1,6 @@
-﻿namespace TourneeFutee
+﻿using System.Linq.Expressions;
+
+namespace TourneeFutee
 {
     public class Matrix
     {
@@ -77,7 +79,18 @@
         public float GetValue(int i, int j)
         {
             // TODO : implémenter
-            return 0.0f;
+            if (i < 0 || i >= NbRows)
+            {
+                throw new ArgumentOutOfRangeException(nameof(i), "Indice i invalide");
+            }
+            else if (j < 0 || j >= NbColumns)
+            {
+                throw new ArgumentOutOfRangeException(nameof(j), "Indice j invalide");
+            }
+            else
+            {
+                return element[i][j];
+            }
         }
 
         // Affecte la valeur à la ligne `i` et colonne `j` à `v`
