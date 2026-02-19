@@ -4,6 +4,8 @@
     {
 
         // TODO : ajouter tous les attributs que vous jugerez pertinents 
+        private bool directed;
+        private Matrix adjacencyMatrix;
 
 
         // --- Construction du graphe ---
@@ -12,7 +14,7 @@
         // La valeur `noEdgeValue` est le poids modélisant l'absence d'un arc (0 par défaut)
         public Graph(bool directed, float noEdgeValue = 0)
         {
-            // TODO : implémenter
+            this.directed = directed;
         }
 
 
@@ -22,7 +24,10 @@
         // Lecture seule
         public int Order
         {
-            get;    // TODO : implémenter
+            get
+            {
+                return Math.Min(adjacencyMatrix.NbRows, adjacencyMatrix.NbColumns);
+            }
                     // pas de set
         }
 
@@ -30,7 +35,10 @@
         // Lecture seule
         public bool Directed
         {
-            get;    // TODO : implémenter
+            get
+            {
+                return directed;
+            }
                     // pas de set
         }
 
