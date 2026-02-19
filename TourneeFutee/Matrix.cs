@@ -100,7 +100,6 @@ namespace TourneeFutee
         // Lève une ArgumentOutOfRangeException si `i` ou `j` est en dehors des indices valides
         public float GetValue(int i, int j)
         {
-            // TODO : implémenter
             if (i < 0 || i >= NbRows)
             {
                 throw new ArgumentOutOfRangeException(nameof(i), "Indice i invalide");
@@ -119,13 +118,39 @@ namespace TourneeFutee
         // Lève une ArgumentOutOfRangeException si `i` ou `j` est en dehors des indices valides
         public void SetValue(int i, int j, float v)
         {
-            // TODO : implémenter
+            if (i < 0 || i >= NbRows)
+            {
+                throw new ArgumentOutOfRangeException(nameof(i), "Indice i invalide");
+            }
+            else if (j < 0 || j >= NbColumns)
+            {
+                throw new ArgumentOutOfRangeException(nameof(j), "Indice j invalide");
+            }
+            else
+            {
+                element[i][j] = v;
+            }
         }
 
         // Affiche la matrice
         public void Print()
         {
-            // TODO : implémenter
+            if (element == null) { Console.WriteLine("Matrice nulle"); }
+            if (NbColumns == 0 || NbRows == 0)
+            {
+                Console.WriteLine("Matrice vide");
+            }
+            else
+            {
+                for (int i = 0; i < NbRows; i++)
+                {
+                    for (int j = 0; j < NbColumns; j++)
+                    {
+                        Console.Write(GetValue(i, j) + " ");
+                    }
+                    Console.WriteLine();
+                }
+            }
         }
 
 
