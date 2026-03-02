@@ -130,7 +130,22 @@
          */
         public void AddEdge(string sourceName, string destinationName, float weight = 1)
         {
-            // TODO : implémenter
+            if (!nomSommet.ContainsKey(sourceName)) throw new ArgumentException($"Le sommet de nom {sourceName} n'existe pas dans le graphe.");
+            if (!nomSommet.ContainsKey(destinationName)) throw new ArgumentException($"Le sommet de nom {destinationName} n'existe pas dans le graphe.");
+
+            int sourceIndex = nomSommet[sourceName];
+            int destinationIndex = nomSommet[destinationName];
+
+            if (adjacencyMatrix.GetValue(sourceIndex,destinationIndex) != 0) throw new ArgumentException($"Il existe déjà un arc allant de {sourceName} à {destinationName}.");
+
+            adjacencyMatrix.SetValue(sourceIndex,destinationIndex,weight);
+
+            if (!directed)
+            {
+                if (adjacencyMatrix.GetValue(destinationIndex, sourceIndex) != 0) throw new ArgumentException($"Il existe déjà un arc allant de {destinationName} à {sourceName}.");
+
+                adjacencyMatrix.SetValue(destinationIndex, sourceIndex, weight);
+            }
         }
 
         /* Supprime l'arc allant du sommet nommé `sourceName` au sommet nommé `destinationName` du graphe
