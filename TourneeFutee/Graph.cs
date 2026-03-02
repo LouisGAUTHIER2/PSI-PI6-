@@ -203,7 +203,7 @@
             if (!nomSommet.ContainsKey(sourceName)) throw new ArgumentException($"Le sommet de nom {sourceName} n'existe pas dans le graphe."); 
             else if (!nomSommet.ContainsKey(destinationName)) throw new ArgumentException($"Le sommet de nom {destinationName} n'existe pas dans le graphe.");
 
-            else if (directed)
+            else if (this.directed)
             {
                 adjacencyMatrix.SetValue(nomSommet[sourceName], nomSommet[destinationName], weight);
                 adjacencyMatrix.SetValue(nomSommet[destinationName], nomSommet[sourceName], weight);
