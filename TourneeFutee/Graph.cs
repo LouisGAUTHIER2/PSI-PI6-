@@ -156,7 +156,22 @@
          */
         public void RemoveEdge(string sourceName, string destinationName)
         {
-            // TODO : implémenter
+            if (!nomSommet.ContainsKey(sourceName)) throw new ArgumentException($"Le sommet de nom {sourceName} n'existe pas dans le graphe.");
+            if (!nomSommet.ContainsKey(destinationName)) throw new ArgumentException($"Le sommet de nom {destinationName} n'existe pas dans le graphe.");
+
+            int sourceIndex = nomSommet[sourceName];
+            int destinationIndex = nomSommet[destinationName];
+
+            if (adjacencyMatrix.GetValue(sourceIndex, destinationIndex) == 0) throw new ArgumentException($"Il n'existe pas d'arc allant de {sourceName} à {destinationName}.");
+
+            adjacencyMatrix.SetValue(sourceIndex, destinationIndex, 0);
+
+            if (!directed)
+            {
+                if (adjacencyMatrix.GetValue(destinationIndex, sourceIndex) == 0) throw new ArgumentException($"Il n'existe pas d'arc allant de {destinationName} à {sourceName}.");
+
+                adjacencyMatrix.SetValue(destinationIndex, sourceIndex, 0);
+            }
         }
 
         /* Renvoie le poids de l'arc allant du sommet nommé `sourceName` au sommet nommé `destinationName`
@@ -167,8 +182,15 @@
          */
         public float GetEdgeWeight(string sourceName, string destinationName)
         {
-            // TODO : implémenter
-            return 0.0f;
+            if (!nomSommet.ContainsKey(sourceName)) throw new ArgumentException($"Le sommet de nom {sourceName} n'existe pas dans le graphe.");
+            if (!nomSommet.ContainsKey(destinationName)) throw new ArgumentException($"Le sommet de nom {destinationName} n'existe pas dans le graphe.");
+
+            int sourceIndex = nomSommet[sourceName];
+            int destinationIndex = nomSommet[destinationName];
+
+            if (adjacencyMatrix.GetValue(sourceIndex, destinationIndex) == 0) throw new ArgumentException($"Il n'existe pas d'arcc allant de {sourceName} à {destinationName}.");
+
+            return adjacencyMatrix.GetValue(sourceIndex, destinationIndex);
         }
 
         /* Affecte le poids l'arc allant du sommet nommé `sourceName` au sommet nommé `destinationName` à `weight` 
