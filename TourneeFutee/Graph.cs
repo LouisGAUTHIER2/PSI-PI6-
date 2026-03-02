@@ -113,9 +113,17 @@
         // Lève une ArgumentException si le sommet n'a pas été trouvé dans le graphe
         public List<string> GetNeighbors(string vertexName)
         {
-            List<string> neighborNames = new List<string>();
+            if (!nomSommet.ContainsKey(vertexName)) throw new ArgumentException($"Le sommet de nom {vertexName}Il n'existe pas ");
 
-            // TODO : implémenter
+            List<string> neighborNames = new List<string>();
+            int vertexIndex = nomSommet[vertexName];
+
+            for (int i = 0; i < Order; i++)
+            {
+                if (i == vertexIndex) continue;
+                string name = nomSommet.FirstOrDefault(x => x.Value == i).Key;
+                if (adjacencyMatrix.GetValue(vertexIndex, i) != 0 || adjacencyMatrix.GetValue(i, vertexIndex) != 0) neighborNames.Add(name);
+            }
 
             return neighborNames;
         }
@@ -201,9 +209,9 @@
         {
             // TODO : implémenter
             if (!nomSommet.ContainsKey(sourceName)) throw new ArgumentException($"Le sommet de nom {sourceName} n'existe pas dans le graphe."); 
-            else if (!nomSommet.ContainsKey(destinationName)) throw new ArgumentException($"Le sommet de nom {destinationName} n'existe pas dans le graphe.");
+            if (!nomSommet.ContainsKey(destinationName)) throw new ArgumentException($"Le sommet de nom {destinationName} n'existe pas dans le graphe.");
 
-            else if (directed)
+            if (!directed)
             {
                 adjacencyMatrix.SetValue(nomSommet[sourceName], nomSommet[destinationName], weight);
                 adjacencyMatrix.SetValue(nomSommet[destinationName], nomSommet[sourceName], weight);
