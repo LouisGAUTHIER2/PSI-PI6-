@@ -122,7 +122,7 @@
             {
                 if (i == vertexIndex) continue;
                 string name = nomSommet.FirstOrDefault(x => x.Value == i).Key;
-                if (adjacencyMatrix.GetValue(vertexIndex, i) != 0 || adjacencyMatrix.GetValue(i, vertexIndex) != 0) neighborNames.Add(name);
+                if (adjacencyMatrix.GetValue(vertexIndex, i) != 0 || (adjacencyMatrix.GetValue(i, vertexIndex) != 0 && !directed)) neighborNames.Add(name);
             }
 
             return neighborNames;
