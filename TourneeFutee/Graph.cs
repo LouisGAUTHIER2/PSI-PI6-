@@ -130,22 +130,7 @@
          */
         public void AddEdge(string sourceName, string destinationName, float weight = 1)
         {
-            if (!nomSommet.ContainsKey(sourceName)) throw new ArgumentException($"Le sommet de nom {sourceName} n'existe pas dans le graphe.");
-            if (!nomSommet.ContainsKey(destinationName)) throw new ArgumentException($"Le sommet de nom {destinationName} n'existe pas dans le graphe.");
-
-            int sourceIndex = nomSommet[sourceName];
-            int destinationIndex = nomSommet[destinationName];
-
-            if (adjacencyMatrix.GetValue(sourceIndex,destinationIndex) != 0) throw new ArgumentException($"Il existe déjà un arc allant de {sourceName} à {destinationName}.");
-
-            adjacencyMatrix.SetValue(sourceIndex,destinationIndex,weight);
-
-            if (!directed)
-            {
-                if (adjacencyMatrix.GetValue(destinationIndex, sourceIndex) != 0) throw new ArgumentException($"Il existe déjà un arc allant de {destinationName} à {sourceName}.");
-
-                adjacencyMatrix.SetValue(destinationIndex, sourceIndex, weight);
-            }
+            // TODO : implémenter
         }
 
         /* Supprime l'arc allant du sommet nommé `sourceName` au sommet nommé `destinationName` du graphe
@@ -168,7 +153,13 @@
         public float GetEdgeWeight(string sourceName, string destinationName)
         {
             // TODO : implémenter
-            return 0.0f;
+            if (!nomSommet.ContainsKey(sourceName)) throw new ArgumentException($"Le sommet de nom {sourceName} n'existe pas dans le graphe."); 
+            else if (!nomSommet.ContainsKey(destinationName)) throw new ArgumentException($"Le sommet de nom {destinationName} n'existe pas dans le graphe.");
+            else
+            {
+                return adjacencyMatrix.GetValue(nomSommet[sourceName], nomSommet[destinationName]);
+            }
+                
         }
 
         /* Affecte le poids l'arc allant du sommet nommé `sourceName` au sommet nommé `destinationName` à `weight` 
@@ -178,6 +169,18 @@
         public void SetEdgeWeight(string sourceName, string destinationName, float weight)
         {
             // TODO : implémenter
+            if (!nomSommet.ContainsKey(sourceName)) throw new ArgumentException($"Le sommet de nom {sourceName} n'existe pas dans le graphe."); 
+            else if (!nomSommet.ContainsKey(destinationName)) throw new ArgumentException($"Le sommet de nom {destinationName} n'existe pas dans le graphe.");
+
+            else if (directed)
+            {
+                adjacencyMatrix.SetValue(nomSommet[sourceName], nomSommet[destinationName], weight);
+                adjacencyMatrix.SetValue(nomSommet[destinationName], nomSommet[sourceName], weight);
+            }
+            else
+            {
+                adjacencyMatrix.SetValue(nomSommet[sourceName], nomSommet[destinationName], weight);
+            }
         }
 
         // TODO : ajouter toutes les méthodes que vous jugerez pertinentes 
