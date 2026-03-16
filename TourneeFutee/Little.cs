@@ -5,10 +5,11 @@
     public class Little
     {
         // TODO : ajouter tous les attributs que vous jugerez pertinents 
-
+        private Graph graph;
         // Instancie le planificateur en spécifiant le graphe modélisant un problème de voyageur de commerce
         public Little(Graph graph)
         {
+            this.graph = graph;
             // TODO : implémenter
         }
 
