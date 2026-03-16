@@ -76,9 +76,9 @@
                 {
                     if (m.GetValue(i, j) == 0)
                     {
-                        if (maxi < MinLigne(m, i) + MinColonne(m, j))
+                        if (maxi < MinLigne(m, i, j) + MinColonne(m, i, j))
                         {
-                            maxi = (int)(MinLigne(m, i) + MinColonne(m, j));
+                            maxi = (MinLigne(m, i, j) + MinColonne(m, i, j));
                             a = i;
                             b = j;
                         }
@@ -88,12 +88,12 @@
             return (a, b, maxi);
         }
 
-        public static int MinLigne(Matrix m, int i)
+        public static int MinLigne(Matrix m, int i, int b)
         {
             float min = float.MaxValue;
             for (int j = 0; j < m.NbColumns; j++)
             {
-                if (m.GetValue(i, j) < min && m.GetValue(i, j) != 0)
+                if (m.GetValue(i, j) < min && j != b)
                 {
                     min = m.GetValue(i, j);
                 }
@@ -101,12 +101,12 @@
             return (int)min;
         }
 
-        public static int MinColonne(Matrix m, int j)
+        public static int MinColonne(Matrix m, int a, int j)
         {
                        float min = float.MaxValue;
             for (int i = 0; i < m.NbRows; i++)
             {
-                if (m.GetValue(i, j) < min && m.GetValue(i, j) != 0)
+                if (m.GetValue(i, j) < min && i != a)
                 {
                     min = m.GetValue(i, j);
                 }
