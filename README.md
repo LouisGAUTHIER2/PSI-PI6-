@@ -2,5 +2,6 @@
 Projet Scientifique Informatique
 
 # Membres du projet 
-- Cl�mence Mucci Chiesa 
+- Clémence Mucci Chiesa 
 - Louis Gauthier
+- Imène Ouarab
