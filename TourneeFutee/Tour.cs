@@ -7,6 +7,7 @@
 
         // propriétés
 
+
         // Coût total de la tournée
         public float Cost
         {

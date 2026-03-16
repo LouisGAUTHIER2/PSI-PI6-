@@ -45,9 +45,39 @@
          */
         public static bool IsForbiddenSegment((string source, string destination) segment, List<(string source, string destination)> includedSegments, int nbCities)
         {
+            (string source, string destination) currentSegment = segment;
+            int nbCitiesVisited = 1;
 
-            // TODO : implémenter
-            return false;   
+            while (nbCitiesVisited < nbCities)
+            {
+                (string source, string destination) newSegment = currentSegment;
+
+                if (currentSegment.destination == segment.source)
+                {
+                    break;
+                }
+
+                //on cherche un nouveau segment
+                foreach ((string source, string destination) testSegment in includedSegments)
+                {
+                    if (testSegment.source == currentSegment.destination)
+                    {
+                        newSegment = testSegment;
+                        break;
+                    }
+                }
+
+                // si on ne trouve pas de nouveau segment, on arrête la recherche
+                if (currentSegment == newSegment)
+                {
+                    return false;
+                }
+
+                currentSegment = newSegment;
+                nbCitiesVisited++;
+            }
+
+            return nbCitiesVisited < nbCities;   
         }
 
         // TODO : ajouter toutes les méthodes que vous jugerez pertinentes 
