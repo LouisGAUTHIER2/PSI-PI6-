@@ -5,18 +5,33 @@
     public class Little
     {
         // TODO : ajouter tous les attributs que vous jugerez pertinents 
+        private Graph graph;
+
 
         // Instancie le planificateur en spécifiant le graphe modélisant un problème de voyageur de commerce
         public Little(Graph graph)
         {
-            // TODO : implémenter
+            this.graph = graph;
         }
 
         // Trouve la tournée optimale dans le graphe `this.graph`
         // (c'est à dire le cycle hamiltonien de plus faible coût)
         public Tour ComputeOptimalTour()
         {
-            // TODO : implémenter
+            Matrix matrixCout = new Matrix(graph.Order, graph.Order, int.MaxValue);
+
+            // Création de la matrice de coûts à partir du graphe
+            foreach (string VertexA in graph.Vertices)
+            {
+                foreach (string VertexB in graph.Vertices)
+                {
+                    if (VertexA != VertexB)
+                    {
+                        matrixCout.SetValue(graph.GetVertexId(VertexA), graph.GetVertexId(VertexB), graph.GetEdgeWeight(VertexA, VertexB));
+                    }
+                }
+            }
+
             return new Tour();
         }
 
