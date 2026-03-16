@@ -67,9 +67,51 @@
         // où `i`, `j`, et `value` contiennent respectivement la ligne, la colonne et la valeur du regret maximale
         public static (int i, int j, float value) GetMaxRegret(Matrix m)
         {
-            // TODO : implémenter
-            return (0, 0, 0.0f);
+            int maxi = 0;
+            int a = 0;
+            int b = 0;
+            for (int i = 0; i <m.NbRows; i++)
+            {
+                for (int j = 0; j < m.NbColumns; j++)
+                {
+                    if (m.GetValue(i, j) == 0)
+                    {
+                        if (maxi < MinLigne(m, i) + MinColonne(m, j))
+                        {
+                            maxi = (int)(MinLigne(m, i) + MinColonne(m, j));
+                            a = i;
+                            b = j;
+                        }
+                    }
+                }
+            }
+            return (a, b, maxi);
+        }
 
+        public static int MinLigne(Matrix m, int i)
+        {
+            float min = float.MaxValue;
+            for (int j = 0; j < m.NbColumns; j++)
+            {
+                if (m.GetValue(i, j) < min && m.GetValue(i, j) != 0)
+                {
+                    min = m.GetValue(i, j);
+                }
+            }
+            return (int)min;
+        }
+
+        public static int MinColonne(Matrix m, int j)
+        {
+                       float min = float.MaxValue;
+            for (int i = 0; i < m.NbRows; i++)
+            {
+                if (m.GetValue(i, j) < min && m.GetValue(i, j) != 0)
+                {
+                    min = m.GetValue(i, j);
+                }
+            }
+            return (int)min;
         }
 
         /* Renvoie vrai si le segment `segment` est un trajet parasite, c'est-à-dire s'il ferme prématurément la tournée incluant les trajets contenus dans `includedSegments`
