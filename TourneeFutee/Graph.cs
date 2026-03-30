@@ -46,6 +46,14 @@
                     // pas de set
         }
 
+        public Matrix AdjacencyMatrix
+        {
+            get
+            {
+                return adjacencyMatrix;
+            }
+        }
+
 
         // --- Gestion des sommets ---
 

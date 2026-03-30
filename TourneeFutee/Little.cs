@@ -17,6 +17,11 @@
         // (c'est à dire le cycle hamiltonien de plus faible coût)
         public Tour ComputeOptimalTour()
         {
+            Matrix m = GetCostMatrix();
+
+            float reductionCost = ReduceMatrix(m);
+            (int i, int j,float regret) = GetMaxRegret(m);
+
             // TODO : implémenter
             return new Tour();
         }
@@ -71,7 +76,7 @@
             int maxi = 0;
             int a = 0;
             int b = 0;
-            for (int i = 0; i <m.NbRows; i++)
+            for (int i = 0; i < m.NbRows; i++)
             {
                 for (int j = 0; j < m.NbColumns; j++)
                 {
@@ -104,7 +109,7 @@
 
         public static int MinColonne(Matrix m, int a, int j)
         {
-                       float min = float.MaxValue;
+            float min = float.MaxValue;
             for (int i = 0; i < m.NbRows; i++)
             {
                 if (m.GetValue(i, j) < min && i != a)
@@ -152,10 +157,27 @@
                 nbCitiesVisited++;
             }
 
-            return nbCitiesVisited < nbCities;   
+            return nbCitiesVisited < nbCities;
         }
 
         // TODO : ajouter toutes les méthodes que vous jugerez pertinentes 
+        Matrix GetCostMatrix()
+        {
+            Matrix m = new Matrix(graph.Order, graph.Order);
+            for (int i = 0; i < graph.Order; i++)
+            {
+                for (int j = 0; j < graph.Order; j++)
+                {
+                    m.SetValue(i, j, graph.AdjacencyMatrix.GetValue(i, j));
 
+                    if (i == j)
+                    {
+                        m.SetValue(i, j, float.PositiveInfinity);
+                    }
+                }
+            }
+            return m;
+
+        }
     }
 }
