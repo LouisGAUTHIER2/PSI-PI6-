@@ -54,6 +54,14 @@
             }
         }
 
+        public List<string> Vertices
+        {
+            get
+            {
+                return nomSommet.Keys.ToList();
+            }
+        }
+
 
         // --- Gestion des sommets ---
 
@@ -70,6 +78,12 @@
             adjacencyMatrix.AddColumn(adjacencyMatrix.NbColumns);
         }
 
+        public int GetVertexId(string name)
+        {
+            if (!nomSommet.ContainsKey(name)) throw new ArgumentException($"Le sommet de nom {name} n'existe pas dans le graphe.");
+
+            return nomSommet[name];
+        }
 
         // Supprime le sommet de nom `name` du graphe (et tous les arcs associés)
         // Lève une ArgumentException si le sommet n'a pas été trouvé dans le graphe
