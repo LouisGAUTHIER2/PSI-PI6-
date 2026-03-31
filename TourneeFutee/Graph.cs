@@ -85,6 +85,12 @@
             return nomSommet[name];
         }
 
+        public string GetVertexName(int id)
+        {
+            if (id < 0 || id >= Order) throw new ArgumentException($"Il n'existe pas de sommet d'id {id} dans le graphe.");
+            return nomSommet.FirstOrDefault(x => x.Value == id).Key;
+        }
+
         // Supprime le sommet de nom `name` du graphe (et tous les arcs associés)
         // Lève une ArgumentException si le sommet n'a pas été trouvé dans le graphe
         public void RemoveVertex(string name)

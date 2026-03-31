@@ -16,15 +16,29 @@
 
         // Trouve la tournée optimale dans le graphe `this.graph`
         // (c'est à dire le cycle hamiltonien de plus faible coût)
-        public Tour ComputeOptimalTour()
+        public Tour ComputeOptimalTour(Tour tour = null, Matrix m = null, List<int> vertexID = null, int sourceID = 0, int destinationID = 0)
         {
-            Matrix m = GetCostMatrix();
+            bool isFirstCall = tour == null || m == null;
+
+            if (isFirstCall)
+            {
+                tour = new Tour(graph, new List<(string source, string destination)>());
+                m = new Matrix(graph.Order, graph.Order);
+                vertexID = new List<int>();
+
+                for (int k = 0; k < graph.Order; k++)
+                {
+                    vertexID.Add(k);
+                }
+            }
 
             float reductionCost = ReduceMatrix(m);
-            (int i, int j,float regret) = GetMaxRegret(m);
+            (int i, int j, float regret) = GetMaxRegret(m);
+
+            tour.AddSegment((graph.GetVertexName(vertexID[i]), graph.GetVertexName(vertexID[j])));
 
             // TODO : implémenter
-            return new Tour();
+            return tour;
         }
 
         // --- Méthodes utilitaires réalisant des étapes de l'algorithme de Little
