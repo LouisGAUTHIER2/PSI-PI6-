@@ -33,6 +33,21 @@ namespace TourneeFutee
             }
         }
 
+        public Matrix(Matrix m)
+        {
+            element = new List<List<float>>();
+            defaultValue = m.DefaultValue;
+            for (int i = 0; i < m.NbRows; i++)
+            {
+                List<float> column = new List<float>();
+                for (int j = 0; j < m.NbColumns; j++)
+                {
+                    column.Add(m.GetValue(i, j));
+                }
+                element.Add(column);
+            }
+        }
+
         // Propriété : valeur par défaut utilisée pour remplir les nouvelles cases
         // Lecture seule
         public float DefaultValue

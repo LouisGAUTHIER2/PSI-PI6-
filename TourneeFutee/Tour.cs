@@ -3,16 +3,22 @@
     // Modélise une tournée dans le cadre du problème du voyageur de commerce
     public class Tour
     {
+        // propriétés
         public Graph graph;
         public List<(string source, string destination)> segments; // liste des trajets de la tournée
+        
         // TODO : ajouter tous les attributs que vous jugerez pertinents 
         public Tour(Graph graph, List<(string source, string destination)> segments)
         {
             this.graph = graph;
             this.segments = segments;
         }
-        // propriétés
 
+        public Tour(Tour tour)
+        {
+            graph = tour.graph;
+            segments = new List<(string source, string destination)>(tour.segments);
+        }
 
         // Coût total de la tournée
         public float Cost

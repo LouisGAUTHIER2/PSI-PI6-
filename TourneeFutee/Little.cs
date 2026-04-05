@@ -1,5 +1,17 @@
-﻿namespace TourneeFutee
+﻿using System;
+using System.Collections.Generic;
+
+namespace TourneeFutee
 {
+    struct Node
+    {
+        public Tour tour;
+        public Matrix m;
+        public List<int> vertexColumnID;
+        public List<int> vertexRowID;
+        public float cost;
+    }
+
     // Résout le problème de voyageur de commerce défini par le graphe `graph`
     // en utilisant l'algorithme de Little
     public class Little
@@ -16,28 +28,70 @@
 
         // Trouve la tournée optimale dans le graphe `this.graph`
         // (c'est à dire le cycle hamiltonien de plus faible coût)
-        public Tour ComputeOptimalTour(Tour tour = null, Matrix m = null, List<int> vertexID = null, int sourceID = 0, int destinationID = 0)
+        public Tour ComputeOptimalTour()
         {
-            bool isFirstCall = tour == null || m == null;
+            Tour tour = new Tour(graph, new List<(string source, string destination)>());
+            Matrix m = GetCostMatrix();
+            List<int> vertexColumnID = new List<int>();
+            List<int> vertexRowID = new List<int>();
 
-            if (isFirstCall)
+            Queue<Node> queue = new Queue<Node>();
+
+            for (int k = 0; k < graph.Order; k++)
             {
-                tour = new Tour(graph, new List<(string source, string destination)>());
-                m = new Matrix(graph.Order, graph.Order);
-                vertexID = new List<int>();
-
-                for (int k = 0; k < graph.Order; k++)
-                {
-                    vertexID.Add(k);
-                }
+                vertexColumnID.Add(k);
+                vertexRowID.Add(k);
             }
 
             float reductionCost = ReduceMatrix(m);
-            (int i, int j, float regret) = GetMaxRegret(m);
 
-            tour.AddSegment((graph.GetVertexName(vertexID[i]), graph.GetVertexName(vertexID[j])));
+            // on commence par tester en ajout
+            float cost = reductionCost;
 
-            // TODO : implémenter
+            while (m.NbRows > 2)
+            {
+                (int i, int j, float value) = GetMaxRegret(m);
+                m.SetValue(i, j, float.PositiveInfinity);
+
+                queue.Enqueue(new Node
+                {
+                    tour = new Tour(tour),
+                    m = new Matrix(m),
+                    vertexColumnID = new List<int>(vertexColumnID),
+                    vertexRowID = new List<int>(vertexRowID),
+                    cost = cost + value
+                });
+
+                // ajout du segment dans tour
+                tour.AddSegment((graph.GetVertexName(vertexRowID[i]), graph.GetVertexName(vertexColumnID[j])));
+
+                // suppression de la ligne i et de la colonne j
+                m.RemoveColumn(j);
+                m.RemoveRow(i);
+                vertexColumnID.RemoveAt(j);
+                vertexRowID.RemoveAt(i);
+
+                reductionCost = ReduceMatrix(m);
+
+                // suppression des segments interdits
+                EliminateSubtours(vertexRowID, vertexColumnID, m, tour);
+
+                cost += reductionCost;
+            }
+            EliminateSubtours(vertexRowID, vertexColumnID, m, tour);
+
+            // on ajoute les deux derniers segments
+            for (int a = 0; a < vertexRowID.Count; a++)
+            {
+                for (int b = 0; b < vertexColumnID.Count; b++)
+                {
+                    if (m.GetValue(a, b) != float.PositiveInfinity)
+                    {
+                        tour.AddSegment((graph.GetVertexName(vertexRowID[a]), graph.GetVertexName(vertexColumnID[b])));
+                    }
+                }
+            }
+
             return tour;
         }
 
@@ -192,7 +246,20 @@
                 }
             }
             return m;
+        }
 
+        public void EliminateSubtours(List<int> vertexRowID, List<int> vertexColumnID, Matrix m, Tour tour)
+        {
+            for (int a = 0; a < vertexRowID.Count; a++)
+            {
+                for (int b = 0; b < vertexColumnID.Count; b++)
+                {
+                    if (IsForbiddenSegment((graph.GetVertexName(vertexRowID[a]), graph.GetVertexName(vertexColumnID[b])), tour.segments, graph.Order))
+                    {
+                        m.SetValue(a, b, float.PositiveInfinity);
+                    }
+                }
+            }
         }
     }
 }
