@@ -14,6 +14,7 @@ namespace TourneeFutee
         // ─────────────────────────────────────────────────────────────────────
 
         private readonly string _connectionString;
+        private readonly MySqlConnection _connection;
 
         // TODO : si vous avez besoin de maintenir une connexion ouverte,
         //        ajoutez un attribut MySqlConnection ici.
@@ -40,9 +41,25 @@ namespace TourneeFutee
         // Exemple :
             _connectionString = $"server={serverIp};database={dbname};uid={user};pwd={pwd};";
 
-            // TODO : tester la connexion dès la construction
-            //        (ouvrir puis fermer une connexion pour valider les paramètres)
-            throw new NotImplementedException("Constructeur non implémenté.");
+            _connection = new MySqlConnection(_connectionString);
+
+            if (_connection.State == System.Data.ConnectionState.Open)
+            {
+                _connection.Close();
+            }
+
+            try
+            {
+                _connection.Open();
+                Console.WriteLine("Connexion à la base de données réussie.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur de connexion à la base de données : {ex.Message}");
+                throw;  // Relancer l'exception pour signaler l'échec de la connexion
+            }
+
+            _connection.Close();
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -147,6 +164,13 @@ namespace TourneeFutee
         {
             var conn = new MySqlConnection(_connectionString);
             conn.Open();
+            return conn;
+        }
+
+        private MySqlConnection CloseConnection()
+        {
+            var conn = new MySqlConnection(_connectionString);
+            conn.Close();
             return conn;
         }
     }
