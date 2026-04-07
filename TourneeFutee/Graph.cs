@@ -78,6 +78,11 @@
             adjacencyMatrix.AddColumn(adjacencyMatrix.NbColumns);
         }
 
+        public bool ContainsVertex(string name)
+        {
+            return nomSommet.ContainsKey(name);
+        }
+
         public int GetVertexId(string name)
         {
             if (!nomSommet.ContainsKey(name)) throw new ArgumentException($"Le sommet de nom {name} n'existe pas dans le graphe.");

@@ -45,6 +45,14 @@
             }
         }
 
+        public List<(string source, string destination)> Segments
+        {
+            get
+            {
+                return segments;
+            }
+        }
+
 
         // Renvoie vrai si la tournée contient le trajet `source`->`destination`
         public bool ContainsSegment((string source, string destination) segment)
