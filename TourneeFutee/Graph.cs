@@ -8,6 +8,8 @@
         private Matrix adjacencyMatrix;
         private Dictionary<string, int> nomSommet;
         private Dictionary<string, float> valeurSommet;
+        private int ID;
+        private static int nextID = 0;
 
         // --- Construction du graphe ---
 
@@ -19,6 +21,9 @@
             this.adjacencyMatrix = new Matrix(0, 0, noEdgeValue);
             this.nomSommet = new Dictionary<string, int>();
             this.valeurSommet = new Dictionary<string, float>();
+
+            this.ID = nextID;
+            nextID++;
         }
 
 
@@ -128,6 +133,13 @@
         {
             if (!nomSommet.ContainsKey(name)) throw new ArgumentException($"Le sommet de nom {name} n'existe pas dans le graphe.");
 
+            return valeurSommet[name];
+        }
+
+        public float GetVertexValue(int id)
+        {
+            if (id < 0 || id >= Order) throw new ArgumentException($"Il n'existe pas de sommet d'id {id} dans le graphe.");
+            string name = nomSommet.FirstOrDefault(x => x.Value == id).Key;
             return valeurSommet[name];
         }
 
@@ -253,6 +265,14 @@
             {
                 adjacencyMatrix.SetValue(nomSommet[sourceName], nomSommet[destinationName], weight);
             }
+        }
+
+        public float GetEdgeWeight(int sourceIndex, int destinationIndex)
+        {
+            if (sourceIndex < 0 || sourceIndex >= Order) throw new ArgumentException($"Il n'existe pas de sommet d'id {sourceIndex} dans le graphe.");
+            if (destinationIndex < 0 || destinationIndex >= Order) throw new ArgumentException($"Il n'existe pas de sommet d'id {destinationIndex} dans le graphe.");
+            if (adjacencyMatrix.GetValue(sourceIndex, destinationIndex) == 0) throw new ArgumentException($"Il n'existe pas d'arc allant de {GetVertexName(sourceIndex)} à {GetVertexName(destinationIndex)}.");
+            return adjacencyMatrix.GetValue(sourceIndex, destinationIndex);
         }
 
         // TODO : ajouter toutes les méthodes que vous jugerez pertinentes 

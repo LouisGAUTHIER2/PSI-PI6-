@@ -86,7 +86,44 @@ namespace TourneeFutee
             // Exemple pour récupérer l'id généré :
             //   uint id = Convert.ToUInt32(cmd.ExecuteScalar());
 
-            throw new NotImplementedException("SaveGraph non implémenté.");
+            var conn = OpenConnection();
+            string sql_com = "INSERT INTO Graphe (est_oriente,nombre_sommets) VALUES (@estOriente,@nombreSommets); SELECT LAST_INSERT_ID();";
+            var cmd = new MySqlCommand(sql_com, conn);
+            cmd.Parameters.AddWithValue("@estOriente", g.Directed);
+            cmd.Parameters.AddWithValue("@nombreSommets", g.Order);
+            uint id = Convert.ToUInt32(cmd.ExecuteScalar());
+
+            for (int i = 0; i < g.Order; i++)
+            {
+                string sql_com_sommet = "INSERT INTO Sommet (graphe_id, nom, valeur,indice_i,indice_j) VALUES (@grapheId, @nom, @valeur, @indice_i, @indice_j);";
+                var cmdSommet = new MySqlCommand(sql_com_sommet, conn);
+                cmdSommet.Parameters.AddWithValue("@grapheId", id);
+                cmdSommet.Parameters.AddWithValue("@valeur", g.GetVertexValue(i));
+                cmdSommet.Parameters.AddWithValue("@nom", g.GetVertexName(i));
+                cmdSommet.Parameters.AddWithValue("@indice_i", i);
+                cmdSommet.Parameters.AddWithValue("@indice_j", i);
+                cmdSommet.ExecuteNonQuery();
+            }
+
+            for (int i = 0; i < g.Order; i++)
+            {
+                for (int j = 0; j < g.Order; j++)
+                {
+                    float poids = g.GetEdgeWeight(i, j);
+
+                    if (poids == 0) continue; // Ignorer les poids nuls ou les boucles
+
+                    string sql_com_arc = "INSERT INTO Arc (graphe_id, sommet_source, sommet_dest, poids) VALUES (@grapheId,@idSource, @idSomme);";
+                    var cmdArc = new MySqlCommand(sql_com_arc, conn);
+                    cmdArc.Parameters.AddWithValue("@grapheId", id);
+                    cmdArc.Parameters.AddWithValue("@idSource", i);
+                    cmdArc.Parameters.AddWithValue("@idSomme", j);
+                    cmdArc.Parameters.AddWithValue("@poids", poids);
+                    cmdArc.ExecuteNonQuery();
+                }
+            }
+
+            return id;
         }
 
         /// <summary>

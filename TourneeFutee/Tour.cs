@@ -6,12 +6,17 @@
         // propriétés
         public Graph graph;
         public List<(string source, string destination)> segments; // liste des trajets de la tournée
-        
+        private int ID;
+        private static int nextID = 0; // compteur pour générer des IDs uniques
+
         // TODO : ajouter tous les attributs que vous jugerez pertinents 
         public Tour(Graph graph, List<(string source, string destination)> segments)
         {
             this.graph = graph;
             this.segments = segments;
+
+            this.ID = nextID;
+            nextID++;
         }
 
         public Tour(Tour tour)
