@@ -62,10 +62,7 @@ namespace TourneeFutee
             _connection.Close();
         }
 
-        public string[] getData(string cmd) {
-            if (!this.isConnected) return null;
-            
-            var conn = OpenConnection();
+        public List<string[]> getData(string command, MySqlConnection conn) {
             MySqlCommand cmd = conn.CreateCommand();
             cmd.CommandText = command;
             
@@ -120,33 +117,38 @@ namespace TourneeFutee
             cmd.Parameters.AddWithValue("@nombreSommets", g.Order);
             uint id = Convert.ToUInt32(cmd.ExecuteScalar());
 
+            uint[] sommetIdMap = new uint[g.Order];
             for (int i = 0; i < g.Order; i++)
             {
-                string sql_com_sommet = "INSERT INTO Sommet (graphe_id, nom, valeur,indice_i,indice_j) VALUES (@grapheId, @nom, @valeur, @indice_i, @indice_j);";
+                string sql_com_sommet = "INSERT INTO Sommet (graphe_id, nom, valeur) VALUES (@grapheId, @nom, @valeur);";
                 var cmdSommet = new MySqlCommand(sql_com_sommet, conn);
                 cmdSommet.Parameters.AddWithValue("@grapheId", id);
                 cmdSommet.Parameters.AddWithValue("@valeur", g.GetVertexValue(i));
                 cmdSommet.Parameters.AddWithValue("@nom", g.GetVertexName(i));
-                cmdSommet.Parameters.AddWithValue("@indice_i", i);
-                cmdSommet.Parameters.AddWithValue("@indice_j", i);
-                cmdSommet.ExecuteNonQuery();
+                uint sommetId = Convert.ToUInt32(cmdSommet.ExecuteScalar());
+                sommetIdMap[i] = sommetId; // Conserver la correspondance indice C# <-> id BdD
             }
 
             for (int i = 0; i < g.Order; i++)
             {
                 for (int j = 0; j < g.Order; j++)
                 {
-                    float poids = g.GetEdgeWeight(i, j);
+                    try
+                    {
+                        float poids = g.GetEdgeWeight(i, j);
 
-                    if (poids == 0) continue; // Ignorer les poids nuls ou les boucles
-
-                    string sql_com_arc = "INSERT INTO Arc (graphe_id, sommet_source, sommet_dest, poids) VALUES (@grapheId,@idSource, @idSomme);";
-                    var cmdArc = new MySqlCommand(sql_com_arc, conn);
-                    cmdArc.Parameters.AddWithValue("@grapheId", id);
-                    cmdArc.Parameters.AddWithValue("@idSource", i);
-                    cmdArc.Parameters.AddWithValue("@idSomme", j);
-                    cmdArc.Parameters.AddWithValue("@poids", poids);
-                    cmdArc.ExecuteNonQuery();
+                        if (poids == 0) continue; // Ignorer les poids nuls ou les boucles
+                        Console.WriteLine($"Inserting arc from {g.GetVertexName(i)} to {g.GetVertexName(j)} with weight {poids}");
+                        Console.WriteLine($"Corresponding sommet IDs: {sommetIdMap[i]} -> {sommetIdMap[j]}");
+                        string sql_com_arc = "INSERT INTO Arc (graphe_id, sommet_source, sommet_dest, poids) VALUES (@grapheId,@sommetSource, @sommetDest, @poids);";
+                        var cmdArc = new MySqlCommand(sql_com_arc, conn);
+                        cmdArc.Parameters.AddWithValue("@grapheId", id);
+                        cmdArc.Parameters.AddWithValue("@sommetSource", sommetIdMap[i]);
+                        cmdArc.Parameters.AddWithValue("@sommetDest", sommetIdMap[j]);
+                        cmdArc.Parameters.AddWithValue("@poids", poids);
+                        cmdArc.ExecuteNonQuery();
+                    }
+                    catch (Exception ex) { Console.WriteLine(ex.ToString()); };
                 }
             }
 
@@ -173,7 +175,47 @@ namespace TourneeFutee
             //   3. SELECT dans Arc WHERE graphe_id = @id -> reconstruire la matrice
             //      d'adjacence en utilisant les correspondances sommet_id <-> indice
 
-            
+            var conn = OpenConnection();
+            string sql_com = "SELECT est_oriente, nombre_sommets FROM Graphe WHERE id = @id;";
+            MySqlCommand cmd = new MySqlCommand(sql_com, conn);
+            cmd.Parameters.AddWithValue("@id", id);
+            MySqlDataReader reader = cmd.ExecuteReader();
+
+            int nbSommets = 0;
+
+            reader.Read();
+            Console.WriteLine(reader[0] + " -- " + reader[1]);
+            Graph graph = new Graph((bool)reader[0]);
+            nbSommets = (int)reader[1];
+
+            reader.Close();
+
+            string sql_com_sommet = "SELECT nom, valeur FROM Sommet WHERE graphe_id = @id ORDER BY id;";
+            MySqlCommand cmdSommet = new MySqlCommand(sql_com_sommet, conn);
+            cmdSommet.Parameters.AddWithValue("@id", id);
+            MySqlDataReader readerSommet = cmdSommet.ExecuteReader();
+            while (readerSommet.Read())
+            {
+                string nom = readerSommet.GetString(0);
+                float valeur = readerSommet.GetFloat(1);
+                graph.AddVertex(nom, valeur);
+            }
+            readerSommet.Close();
+
+            string sql_com_arc = "SELECT sommet_source, sommet_dest, poids FROM Arc WHERE graphe_id = @id;";
+            MySqlCommand cmdArc = new MySqlCommand(sql_com_arc, conn);
+            cmdArc.Parameters.AddWithValue("@id", id);
+            MySqlDataReader readerArc = cmdArc.ExecuteReader();
+            while (readerArc.Read())
+            {
+                string source = readerArc.GetString(0);
+                string dest = readerArc.GetString(1);
+                float poids = readerArc.GetFloat(2);
+                graph.SetEdgeWeight(source, dest, poids);
+            }
+
+            conn.Close();
+            return graph; // Remplacer par l'instance de Graph reconstituée
         }
 
         /// <summary>

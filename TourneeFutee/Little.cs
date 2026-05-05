@@ -46,7 +46,7 @@ namespace TourneeFutee
             float reductionCost = ReduceMatrix(m);
 
             // on commence par tester en ajout
-            float cost = reductionCost;
+            float cost = reductionCost; 
 
             while (m.NbRows > 2)
             {

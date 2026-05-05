@@ -267,6 +267,19 @@
             }
         }
 
+        public void SetEdgeWeight(int sourceId, int destinationId, float weight)
+        {
+            if (!directed)
+            {
+                adjacencyMatrix.SetValue(sourceId, destinationId, weight);
+                adjacencyMatrix.SetValue(destinationId, sourceId, weight);
+            }
+            else
+            {
+                adjacencyMatrix.SetValue(sourceId, destinationId, weight);
+            }
+        }
+
         public float GetEdgeWeight(int sourceIndex, int destinationIndex)
         {
             if (sourceIndex < 0 || sourceIndex >= Order) throw new ArgumentException($"Il n'existe pas de sommet d'id {sourceIndex} dans le graphe.");
