@@ -62,6 +62,33 @@ namespace TourneeFutee
             _connection.Close();
         }
 
+        public string[] getData(string cmd) {
+            if (!this.isConnected) return null;
+            
+            var conn = OpenConnection();
+            MySqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = command;
+            
+            MySqlDataReader reader = cmd.ExecuteReader();
+
+            List<string[]> valueString = new List<string[]>();
+
+            while (reader.Read())
+            {
+                string[] line = new string[reader.FieldCount];
+
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    line[i] = reader.GetValue(i).ToString();
+                }
+                valueString.Add(line);
+            }
+
+            conn.Close();
+
+            return valueString;
+        }
+
         // ─────────────────────────────────────────────────────────────────────
         // Méthodes publiques
         // ─────────────────────────────────────────────────────────────────────
@@ -123,6 +150,8 @@ namespace TourneeFutee
                 }
             }
 
+            conn.Close();
+
             return id;
         }
 
@@ -144,7 +173,7 @@ namespace TourneeFutee
             //   3. SELECT dans Arc WHERE graphe_id = @id -> reconstruire la matrice
             //      d'adjacence en utilisant les correspondances sommet_id <-> indice
 
-            throw new NotImplementedException("LoadGraph non implémenté.");
+            
         }
 
         /// <summary>
