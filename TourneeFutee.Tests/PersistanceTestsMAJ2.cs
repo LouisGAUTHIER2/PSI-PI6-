@@ -26,7 +26,7 @@ namespace TourneeFutee.Tests
         private const string DB_SERVER = "127.0.0.1";
         private const string DB_NAME   = "tourneefutee";   // base dédiée aux tests !
         private const string DB_USER   = "root";
-        private const string DB_PWD    = "root";
+        private const string DB_PWD    = "bg54ni!+";
 
         // ─────────────────────────────────────────────────────────────────────
         // Instance partagée du service (créée une seule fois par classe de test)
@@ -49,17 +49,18 @@ namespace TourneeFutee.Tests
 
         /// <summary>
         /// Construit le graphe asymétrique utilisé dans l'objectif 2 (6 villes).
-        ///       A   B   C   D   E   F
-        ///   A [ ∞   1   7   3  14   2 ]
-        ///   B [ 3   ∞   6   9   1  24 ]
-        ///   C [ 6  14   ∞   3   7   3 ]
-        ///   D [ 2   3   5   ∞   9  11 ]
-        ///   E [15   7  11   2   ∞   4 ]
-        ///   F [20   5  13   4  18   ∞ ]
+        ///       A    B    C    D    E    F
+        ///   A [  ∞    1    7    3   14    2 ]
+        ///   B [  3    ∞    6    9    1   24 ]
+        ///   C [  6   14    ∞    3    7    3 ]
+        ///   D [  2    3    5    ∞    9   11 ]
+        ///   E [ 15    7   11    2    ∞    4 ]  ← E->D=2, E->F=4
+        ///   F [ 20    5   13    4   18    ∞ ]
         /// Tournée optimale : A→C→F→B→E→D→A (coût 20)
         /// </summary>
         private static Graph BuildAsymmetricGraph()
         {
+            // FIX : paramètre renommé de `isOriented` vers `directed`
             // Graphe orienté à 6 sommets
             var g = new Graph(directed: true);
 
@@ -98,6 +99,7 @@ namespace TourneeFutee.Tests
         /// </summary>
         private static Graph BuildSimpleGraph()
         {
+            // FIX : paramètre renommé de `isOriented` vers `directed`
             var g = new Graph(directed: false);
             g.AddVertex("X", 1.5f);
             g.AddVertex("Y", 2.0f);
@@ -156,12 +158,14 @@ namespace TourneeFutee.Tests
 
             // Vérifier le nombre de sommets
             Assert.AreEqual(
+                // FIX : VertexCount->Order
                 original.Order, loaded.Order,
                 "Le nombre de sommets doit être identique après rechargement.");
 
             // Vérifier que les sommets ont les mêmes noms et valeurs
             foreach (string name in new[] { "X", "Y", "Z" })
             {
+               
                 Assert.IsTrue(loaded.ContainsVertex(name),
                     $"Le sommet '{name}' doit exister dans le graphe rechargé.");
                 Assert.AreEqual(
@@ -175,8 +179,9 @@ namespace TourneeFutee.Tests
             Assert.AreEqual(30f, loaded.GetEdgeWeight("X", "Z"), 0.001f, "Poids X->Z incorrect.");
 
             // Vérifier que le graphe rechargé est non orienté
+            // FIX : IsOriented -> Directed
             Assert.AreEqual(original.Directed, loaded.Directed,
-                "La propriété IsOriented doit être identique.");
+                "La propriété Directed doit être identique.");
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -193,7 +198,7 @@ namespace TourneeFutee.Tests
             Graph original = BuildAsymmetricGraph();
             uint id = _service.SaveGraph(original);
             Graph loaded = _service.LoadGraph(id);
-
+            // FIX : VertexCount->Order
             Assert.AreEqual(original.Order, loaded.Order,
                 "Nombre de sommets différent après rechargement.");
 
@@ -201,7 +206,8 @@ namespace TourneeFutee.Tests
             Assert.AreEqual(1f,  loaded.GetEdgeWeight("A", "B"), 0.001f, "Poids A->B incorrect.");
             Assert.AreEqual(3f,  loaded.GetEdgeWeight("B", "A"), 0.001f, "Poids B->A incorrect.");
             Assert.AreEqual(20f, loaded.GetEdgeWeight("F", "A"), 0.001f, "Poids F->A incorrect.");
-            Assert.AreEqual(4f,  loaded.GetEdgeWeight("E", "D"), 0.001f, "Poids E->D incorrect.");
+            Assert.AreEqual(2f,  loaded.GetEdgeWeight("E", "D"), 0.001f, "Poids E->D incorrect.");
+            Assert.AreEqual(4f,  loaded.GetEdgeWeight("E", "F"), 0.001f, "Poids E->F incorrect.");
 
             Assert.IsTrue(loaded.Directed,
                 "Le graphe rechargé doit être orienté.");
@@ -221,9 +227,7 @@ namespace TourneeFutee.Tests
             uint graphId = _service.SaveGraph(g);
 
             // Créer la tournée optimale connue : A->C->F->B->E->D->A (coût 20)
-            Little little = new Little(g);
-            var tour = little.ComputeOptimalTour();
-            
+            var tour = new Tour(new List<string> { "A", "C", "F", "B", "E", "D", "A" }, 20f);
             uint tourId = _service.SaveTour(graphId, tour);
 
             Assert.IsTrue(tourId > 0,
@@ -245,19 +249,19 @@ namespace TourneeFutee.Tests
             uint graphId = _service.SaveGraph(g);
 
             // Tournée optimale : A->C->F->B->E->D->A, coût 20
-            Little little = new Little(g);
-            var sequence = new List<(string source, string destination)> { ("A","C"), ("C","F"), ("F","B"), ("B","E"), ("E","D"), ("D","A")};
-            var originalTour = little.ComputeOptimalTour();
+            var sequence = new List<string> { "A", "C", "F", "B", "E", "D", "A" };
+            var originalTour = new Tour(sequence, 20f);
             uint tourId = _service.SaveTour(graphId, originalTour);
 
             Tour loadedTour = _service.LoadTour(tourId);
 
             // Vérifier le coût total
+            // FIX : TotalCost -> Cost
             Assert.AreEqual(originalTour.Cost, loadedTour.Cost, 0.001f,
                 "Le coût total de la tournée doit être identique après rechargement.");
 
             // Vérifier la séquence complète des sommets
-            List<(string source, string destination)> loadedSeq = loadedTour.Segments;
+            IList<string> loadedSeq = loadedTour.Vertices;
             Assert.AreEqual(sequence.Count, loadedSeq.Count,
                 "La séquence de la tournée doit avoir le même nombre d'étapes.");
 
@@ -290,7 +294,7 @@ namespace TourneeFutee.Tests
 
             Graph loaded1 = _service.LoadGraph(id1);
             Graph loaded2 = _service.LoadGraph(id2);
-
+            // FIX : VertexCount -> Order
             Assert.AreEqual(g1.Order, loaded1.Order,
                 "Le graphe 1 rechargé doit avoir le bon nombre de sommets.");
             Assert.AreEqual(g2.Order, loaded2.Order,
